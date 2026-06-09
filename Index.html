@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack | Live Luggage Tracking</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-boxes-packing"></i> Trinity Logistics
+            </div>
+            <p>Enter your tracking ID below to check your luggage status in real-time.</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="tracking-id-input" placeholder="e.g., LUG-84920X">
+            <button id="track-btn"><i class="fa-solid fa-magnifying-glass"></i> Track</button>
+        </div>
+
+        <div id="error-message" class="error-msg hidden">
+            <i class="fa-solid fa-circle-exclamation"></i> Invalid Tracking ID. Please try again.
+        </div>
+
+        <div id="tracking-result" class="result-card hidden">
+            
+            <div class="result-header">
+                <div>
+                    <h3>Tracking ID: <span id="res-id">LUG-84920X</span></h3>
+                    <p id="res-description">Black Samsonite Suitcase (23kg)</p>
+                </div>
+                <div class="status-badge" id="res-status-badge">In Transit</div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="delivery-personel">
+                <div class="courier-icon">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <div class="courier-details">
+                    <h4>Assigned Courier</h4>
+                    <p id="res-courier-name">John Doe</p>
+                    <span id="res-courier-phone"><i class="fa-solid fa-phone"></i> +234 800 000 0000</span>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item" id="step-registered">
+                    <div class="marker"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h4>Luggage Registered</h4>
+                        <p>Admin accepted package into system.</p>
+                    </div>
+                </div>
+                <div class="timeline-item" id="step-transit">
+                    <div class="marker"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h4>In Transit</h4>
+                        <p>Package is currently on route to destination.</p>
+                    </div>
+                </div>
+                <div class="timeline-item" id="step-delivered">
+                    <div class="marker"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h4>Delivered</h4>
+                        <p>Package safely handed over to recipient.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

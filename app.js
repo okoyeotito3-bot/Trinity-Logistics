@@ -1,8 +1,6 @@
-// 1. Import Firebase SDK modules via CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 2. Your Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBvdFAKO1hcC70kTd3BbiuskVJH9XTDtWs",
     authDomain: "trinity-logistics-b076c.firebaseapp.com",
@@ -13,105 +11,121 @@ const firebaseConfig = {
     measurementId: "G-20DY9C2Q1N"
 };
 
-// 3. Initialize Firebase Services
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db  = getFirestore(app);
 
-// 4. DOM Element Selectors
-const trackBtn = document.getElementById('track-btn');
+const trackBtn      = document.getElementById('track-btn');
 const trackingInput = document.getElementById('tracking-id-input');
-const resultCard = document.getElementById('tracking-result');
-const errorMsg = document.getElementById('error-message');
+const resultCard    = document.getElementById('tracking-result');
+const errorMsg      = document.getElementById('error-message');
 
-// 5. Event Listeners
 trackBtn.addEventListener('click', performTracking);
 trackingInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') performTracking();
 });
 
-// 6. Main Tracking Logic
 async function performTracking() {
-   const trackingId = trackingInput.value.trim();
+    const raw = trackingInput.value.trim().toUpperCase();
 
-    // Reset UI states before loading
     resultCard.classList.add('hidden');
     errorMsg.classList.add('hidden');
-    trackBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Searching...`;
+    trackBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Searching…`;
     trackBtn.disabled = true;
 
-    if (!trackingId) {
-        resetButtonState();
-        return;
-    }
+    if (!raw) { resetBtn(); return; }
+
+    // Accept with or without TRINITY- prefix
+    const trackingId = raw.startsWith('TRINITY-') ? raw : `TRINITY-${raw}`;
 
     try {
-        // Point to the specific document inside the 'luggage' collection using trackingId as Document ID
-        const docRef = doc(db, "luggage", trackingId);
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(doc(db, "luggage", trackingId));
 
         if (docSnap.exists()) {
-            const luggageData = docSnap.data();
-            renderTrackingDetails(trackingId, luggageData);
+            renderTrackingDetails(trackingId, docSnap.data());
         } else {
-            // Document ID doesn't exist in Firestore
-            showError("Tracking ID not found. Verify and try again.");
+            showError("Tracking ID not found. Please verify and try again.");
         }
-    } catch (error) {
-        console.error("Firebase Fetch Error:", error);
-        showError("Network connection error. Try again later.");
+    } catch (err) {
+        console.error(err);
+        showError("Network error. Please try again later.");
     } finally {
-        resetButtonState();
+        resetBtn();
     }
 }
 
-// 7. Render Data to the UI
-function renderTrackingDetails(id, data) {
-    document.getElementById('res-id').innerText = id;
-    document.getElementById('res-description').innerText = `${data.description || 'N/A'} (${data.weight || '0kg'})`;
-    document.getElementById('res-status-badge').innerText = data.status || 'Registered';
-    document.getElementById('res-courier-name').innerText = data.courierName || 'Unassigned';
-    document.getElementById('res-courier-phone').innerHTML = `<i class="fa-solid fa-phone"></i> ${data.courierPhone || 'N/A'}`;
+function renderTrackingDetails(id, d) {
+    // Tracking ID & package
+    document.getElementById('res-id').innerText          = id;
+    document.getElementById('res-description').innerText = `${d.description || 'N/A'} (${d.weight || '—'})`;
 
-    // Reset timeline progress classes
-    const steps = ['step-registered', 'step-transit', 'step-delivered'];
-    steps.forEach(stepId => document.getElementById(stepId).classList.remove('active'));
+    // Status banner
+    const banner   = document.getElementById('status-banner');
+    const iconBox  = document.getElementById('status-icon-box');
+    const statusEl = document.getElementById('res-status-badge');
+    const icon     = document.getElementById('status-icon');
 
-    const badge = document.getElementById('res-status-badge');
-    const currentStatus = data.status;
+    banner.className = 'status-banner';
+    statusEl.innerText = d.status || 'Registered';
 
-    // Evaluate database status and style accordingly
-    if (currentStatus === "Registered") {
+    if (d.status === 'Delivered') {
+        banner.classList.add('s-delivered');
+        icon.className = 'fa-solid fa-circle-check';
+    } else if (d.status === 'In Transit') {
+        banner.classList.add('s-transit');
+        icon.className = 'fa-solid fa-truck-fast';
+    } else {
+        banner.classList.add('s-registered');
+        icon.className = 'fa-solid fa-box';
+    }
+
+    // Courier
+    document.getElementById('res-courier-name').innerText  = d.courierName  || 'Unassigned';
+    document.getElementById('res-courier-phone').innerHTML = `<i class="fa-solid fa-phone"></i> ${d.courierPhone || '—'}`;
+
+    // Sender
+    document.getElementById('res-sender-name').innerText       = d.senderName       || '—';
+    document.getElementById('res-sender-phone').innerText      = d.senderPhone      || '—';
+    document.getElementById('res-sender-email').innerText      = d.senderEmail      || '—';
+    document.getElementById('res-sender-address').innerText    = d.senderAddress    || '—';
+    document.getElementById('res-sender-city').innerText       = d.senderCity       || '—';
+    document.getElementById('res-sender-country').innerText    = d.senderCountry    || '—';
+    document.getElementById('res-sender-occupation').innerText = d.senderOccupation || '—';
+
+    // Recipient
+    document.getElementById('res-recipient-name').innerText         = d.recipientName         || '—';
+    document.getElementById('res-recipient-phone').innerText        = d.recipientPhone        || '—';
+    document.getElementById('res-recipient-email').innerText        = d.recipientEmail        || '—';
+    document.getElementById('res-recipient-address').innerText      = d.recipientAddress      || '—';
+    document.getElementById('res-recipient-city').innerText         = d.recipientCity         || '—';
+    document.getElementById('res-recipient-country').innerText      = d.recipientCountry      || '—';
+    document.getElementById('res-recipient-occupation').innerText   = d.recipientOccupation   || '—';
+    document.getElementById('res-relationship').innerText           = d.recipientRelationship || '—';
+
+    // Timeline steps
+    ['step-registered', 'step-transit', 'step-delivered'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+    });
+
+    if (d.status === 'Registered') {
         document.getElementById('step-registered').classList.add('active');
-        updateBadgeStyle(badge, "#ef4444", "rgba(239,68,68,0.1)", "rgba(239,68,68,0.2)");
-    } 
-    else if (currentStatus === "In Transit") {
+    } else if (d.status === 'In Transit') {
         document.getElementById('step-registered').classList.add('active');
         document.getElementById('step-transit').classList.add('active');
-        updateBadgeStyle(badge, "#3b82f6", "rgba(59,130,246,0.1)", "rgba(59,130,246,0.2)");
-    } 
-    else if (currentStatus === "Delivered") {
+    } else if (d.status === 'Delivered') {
         document.getElementById('step-registered').classList.add('active');
         document.getElementById('step-transit').classList.add('active');
         document.getElementById('step-delivered').classList.add('active');
-        updateBadgeStyle(badge, "#10b981", "rgba(16,185,129,0.1)", "rgba(16,185,129,0.2)");
     }
 
     resultCard.classList.remove('hidden');
 }
 
-// Helper Functions
-function updateBadgeStyle(element, color, bg, border) {
-    element.style.color = color;
-    element.style.backgroundColor = bg;
-    element.style.borderColor = border;
-}
-
 function showError(msg) {
-    errorMsg.innerText = msg;
+    errorMsg.querySelector('span').innerText = msg;
     errorMsg.classList.remove('hidden');
 }
 
-function resetButtonState() {
-    trackBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Track`;
-    trackBtn.disabled = false;
+function resetBtn() {
+    trackBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Track Shipment`;
+    trackBtn.disabled  = false;
 }

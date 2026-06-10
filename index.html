@@ -3,77 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiTrack | Live Luggage Tracking</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Trinity Logistics | Live Shipment Tracking</title>
+    <link rel="stylesheet" href="customer-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fa-solid fa-boxes-packing"></i> Trinity Logistics
+    <div class="page-wrap">
+
+        <!-- HERO HEADER -->
+        <header class="hero">
+            <div class="hero-logo">
+                <span class="logo-box"><i class="fa-solid fa-truck-fast"></i></span>
+                <span class="logo-text">Trinity<span class="dot">.</span></span>
             </div>
-            <p>Enter your tracking ID below to check your luggage status in real-time.</p>
+            <h1>Track Your Shipment</h1>
+            <p class="hero-sub">Enter your Tracking ID for a real-time status update on your package.</p>
+
+            <!-- TRUST BAR -->
+            <div class="trust-bar">
+                <div class="trust-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Trusted by <strong>Millions</strong> worldwide</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span><strong>9+ Years</strong> in global logistics</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>Delivering <strong>worldwide</strong></span>
+                </div>
+            </div>
         </header>
 
-        <div class="search-box">
-            <input type="text" id="tracking-id-input" placeholder="e.g., LUG-84920X">
-            <button id="track-btn"><i class="fa-solid fa-magnifying-glass"></i> Track</button>
-        </div>
-
-        <div id="error-message" class="error-msg hidden">
-            <i class="fa-solid fa-circle-exclamation"></i> Invalid Tracking ID. Please try again.
-        </div>
-
-        <div id="tracking-result" class="result-card hidden">
-            
-            <div class="result-header">
-                <div>
-                    <h3>Tracking ID: <span id="res-id">LUG-84920X</span></h3>
-                    <p id="res-description">Black Samsonite Suitcase (23kg)</p>
+        <!-- SEARCH -->
+        <div class="search-card">
+            <label class="search-label">Tracking ID</label>
+            <div class="search-row">
+                <div class="search-input-wrap">
+                    <i class="fa-solid fa-barcode"></i>
+                    <input type="text" id="tracking-id-input" placeholder="e.g., TRINITY-482910" autocomplete="off" spellcheck="false">
                 </div>
-                <div class="status-badge" id="res-status-badge">In Transit</div>
+                <button id="track-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i> Track Shipment
+                </button>
+            </div>
+        </div>
+
+        <!-- ERROR -->
+        <div id="error-message" class="error-msg hidden">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Tracking ID not found. Please check the ID and try again.</span>
+        </div>
+
+        <!-- RESULT CARD -->
+        <div id="tracking-result" class="result-card hidden">
+
+            <!-- Status Banner -->
+            <div class="status-banner" id="status-banner">
+                <div class="status-icon-box" id="status-icon-box">
+                    <i id="status-icon" class="fa-solid fa-box"></i>
+                </div>
+                <div class="status-text">
+                    <p class="status-eyebrow">Current Status</p>
+                    <h2 id="res-status-badge">In Transit</h2>
+                </div>
+            </div>
+
+            <!-- ID + Description row -->
+            <div class="info-strip">
+                <div class="info-chip">
+                    <span class="chip-label">Tracking ID</span>
+                    <span class="chip-val mono" id="res-id"></span>
+                </div>
+                <div class="info-chip">
+                    <span class="chip-label">Package</span>
+                    <span class="chip-val" id="res-description"></span>
+                </div>
+            </div>
+
+            <!-- Courier -->
+            <div class="courier-row">
+                <div class="courier-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="courier-info">
+                    <span class="courier-label">Assigned Courier</span>
+                    <p id="res-courier-name" class="courier-name"></p>
+                    <span id="res-courier-phone" class="courier-phone"></span>
+                </div>
             </div>
 
             <hr class="divider">
 
-            <div class="delivery-personel">
-                <div class="courier-icon">
-                    <i class="fa-solid fa-truck-ramp-box"></i>
+            <!-- Sender & Recipient -->
+            <div class="people-grid">
+
+                <div class="people-card">
+                    <h4 class="people-title"><i class="fa-solid fa-paper-plane"></i> Sender</h4>
+                    <div class="people-rows">
+                        <div class="people-row"><span>Name</span><strong id="res-sender-name"></strong></div>
+                        <div class="people-row"><span>Phone</span><strong id="res-sender-phone"></strong></div>
+                        <div class="people-row"><span>Email</span><strong id="res-sender-email"></strong></div>
+                        <div class="people-row"><span>Address</span><strong id="res-sender-address"></strong></div>
+                        <div class="people-row"><span>City</span><strong id="res-sender-city"></strong></div>
+                        <div class="people-row"><span>Country</span><strong id="res-sender-country"></strong></div>
+                        <div class="people-row"><span>Occupation</span><strong id="res-sender-occupation"></strong></div>
+                    </div>
                 </div>
-                <div class="courier-details">
-                    <h4>Assigned Courier</h4>
-                    <p id="res-courier-name">John Doe</p>
-                    <span id="res-courier-phone"><i class="fa-solid fa-phone"></i> +234 800 000 0000</span>
+
+                <div class="people-card">
+                    <h4 class="people-title"><i class="fa-solid fa-location-dot"></i> Recipient</h4>
+                    <div class="people-rows">
+                        <div class="people-row"><span>Name</span><strong id="res-recipient-name"></strong></div>
+                        <div class="people-row"><span>Phone</span><strong id="res-recipient-phone"></strong></div>
+                        <div class="people-row"><span>Email</span><strong id="res-recipient-email"></strong></div>
+                        <div class="people-row"><span>Address</span><strong id="res-recipient-address"></strong></div>
+                        <div class="people-row"><span>City</span><strong id="res-recipient-city"></strong></div>
+                        <div class="people-row"><span>Country</span><strong id="res-recipient-country"></strong></div>
+                        <div class="people-row"><span>Occupation</span><strong id="res-recipient-occupation"></strong></div>
+                        <div class="people-row"><span>Relationship</span><strong id="res-relationship"></strong></div>
+                    </div>
                 </div>
+
             </div>
 
+            <hr class="divider">
+
+            <!-- Timeline -->
+            <h4 class="section-label"><i class="fa-solid fa-route"></i> Shipment Progress</h4>
             <div class="timeline">
                 <div class="timeline-item" id="step-registered">
                     <div class="marker"><i class="fa-solid fa-check"></i></div>
                     <div class="timeline-content">
                         <h4>Luggage Registered</h4>
-                        <p>Admin accepted package into system.</p>
+                        <p>Package accepted and logged into the system.</p>
                     </div>
                 </div>
                 <div class="timeline-item" id="step-transit">
                     <div class="marker"><i class="fa-solid fa-check"></i></div>
                     <div class="timeline-content">
                         <h4>In Transit</h4>
-                        <p>Package is currently on route to destination.</p>
+                        <p>Package is currently on route to its destination.</p>
                     </div>
                 </div>
                 <div class="timeline-item" id="step-delivered">
                     <div class="marker"><i class="fa-solid fa-check"></i></div>
                     <div class="timeline-content">
                         <h4>Delivered</h4>
-                        <p>Package safely handed over to recipient.</p>
+                        <p>Package safely handed over to the recipient.</p>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <p>&copy; 2025 Trinity Logistics. Trusted by millions. Operating for 9+ years.</p>
+        </footer>
+
     </div>
 
     <script type="module" src="app.js"></script>
